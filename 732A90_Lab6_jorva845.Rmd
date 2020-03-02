@@ -172,6 +172,28 @@ genetic(100, 0.9)
 
 # Q2: EM algorithm
 
+*The data file physical.csv describes a behavior of two related physical processes Y = Y (X) and Z = Z(X).*
+
+## 1. 
+
+*Make a time series plot describing dependence of Z and Y versus X. Does it seem that two processes are related to each other? What can you say about the variation of the response values with respect to X?*
+
+```{r}
+data <- data <- read.csv("physical1.csv")
+plot(data$X, data$Y, col = "black")
+points(data$X, data$Z, col = "red")
+legend("topright", c("Y = Black", "Z = Red"), col = c("Black", "Red"))
+```
+
+It looks like Y and Z are related. The variance of both Y and Z decreases as X (time) increases/progresses.
+
+## 2.
+
+*Note that there are some missing values of Z in the data which implies problems in estimating models by maximum likelihood. Use the following model*
+
+$$Y_i \sim e^{\frac{X_i}{\lambda}}, Z_i \sim e^{\frac{X_i}{2\lambda}} $$
+*where $\lambda$ is some unknown parameter. The goal is to derive an EM algorithm that estimates $\lambda$.*
+
 
 
 \newpage
