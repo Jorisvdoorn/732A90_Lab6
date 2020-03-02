@@ -75,7 +75,9 @@ genetic <- function(maxiter, mutprob){
   for(i in 1:30){
     func_out[i] <- foo(i)
   }
-  graph <- plot(1:30+maxiter, func_out, col = "black")
+  
+  x <- 1:30
+  graph <- plot(x, func_out, col = "black")
   
   # b
   init_pop <- seq(0,30,5)
@@ -109,8 +111,12 @@ genetic <- function(maxiter, mutprob){
     max_val[i] <- max(init_pop)
     
     # d v
-    graph
-    points(30+i, max_val[i], col = "blue")
+    func_out <- append(func_out,max_val[i])
+    x <- append(x, 30+i)
+    
+    if(i == maxiter){
+      plot(x, func_out, col = ifelse(x<=30,"black","red"))
+    }
   }
 }
 
@@ -151,6 +157,8 @@ genetic <- function(maxiter, mutprob){
 
 ### e.
 
+*Run your code with different combinations of maxiter= 10, 100 and mutprob= 0.1, 0.5, 0.9. Observe the initial population and final population. Conclusions?*
+
 ```{r}
 genetic(10,0.1)
 genetic(100, 0.1)
@@ -163,6 +171,8 @@ genetic(100, 0.9)
 \newpage
 
 # Q2: EM algorithm
+
+
 
 \newpage
 
