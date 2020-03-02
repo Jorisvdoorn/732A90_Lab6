@@ -1,0 +1,173 @@
+---
+title: "732A90 - Lab 6 - jorva845"
+author: "Joris van Doorn - jorva845"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+RNGversion(min(as.character(getRversion()), "3.6.2"))
+knitr::opts_chunk$set(echo = TRUE)
+library(RMaCzek)
+library(knitr)
+library(tidyr)
+library(tidyverse)
+library(tinytex)
+library(dplyr)
+library(readxl)
+library(stats)
+library(coda)
+library(gdata)
+```
+
+# Q1: Genetic Algorithm
+
+*In this assignment, you will try to perform one-dimensional maximization with the help of a genetic algorithm.*
+
+## 1.
+
+*Define the function*
+
+$$f(x) := \frac{x^2}{e^2} - 2 e^{-\frac{9 sin(x)}{x^2+x+1}}$$
+
+```{r}
+foo <- function(x){
+  result <- (x^2 / exp(x))-2 * exp((-9*sin(x))/(x^2+x+1))
+  return(result)
+}
+```
+
+## 2.
+
+*Define the function crossover(): for two scalars x and y it returns their \kid" as (x+y)=2.*
+
+```{r}
+crossover <- function(x, y){
+  kid <- (x + y)/2
+  return(kid)
+}
+```
+
+## 3.
+
+*Define the function mutate() that for a scalar x returns the result of the integer division x^2 mod 30. (Operation mod is denoted in R as %%).*
+
+```{r}
+mutate <- function(x){
+  mod <- x^2 %% 30
+  return(mod)
+}
+```
+
+## 4.
+
+*Write a function that depends on the parameters maxiter and mutprob and:*
+
+### a.
+
+*Plots function f in the range from 0 to 30. Do you see any maximum value?*
+
+
+```{r}
+genetic <- function(maxiter, mutprob){
+  # a
+  func_out <- c()
+  for(i in 1:30){
+    func_out[i] <- foo(i)
+  }
+  graph <- plot(1:30+maxiter, func_out, col = "black")
+  
+  # b
+  init_pop <- seq(0,30,5)
+  
+  # c
+  values <- c()
+  for(i in 1:length(init_pop)){
+    values[i] <- foo((i-1)*5)
+  }
+  
+  max_val <- c()
+  
+  # d i
+  for(i in 1:maxiter){
+    parents <- sample(1:length(init_pop), 2, replace = F)
+    
+    # d ii
+    victim <- order(values)[1]
+    
+    # d iii
+    kid <- crossover(parents[1], parents[2])
+    mutated_kid <- mutate(kid)
+    
+    # d iv
+    init_pop[victim] <- mutated_kid
+    
+    for(j in 1:length(init_pop)){
+      values[j] <- foo(init_pop[j])
+    }
+    
+    max_val[i] <- max(init_pop)
+    
+    # d v
+    graph
+    points(30+i, max_val[i], col = "blue")
+  }
+}
+
+
+```
+
+### b.
+
+*Defines an initial population for the genetic algorithm as X = (0, 5, 10, 15, ..., 30).*
+
+### c.
+
+*Computes vector Values that contains the function values for each population point.*
+
+### d. 
+
+*Performs maxiter iterations where at each iteration*
+
+#### i. 
+
+*Two indexes are randomly sampled from the current population, they are further used as parents (use sample()).*
+
+#### ii.
+
+*One index with the smallest objective function is selected from the current population, the point is referred to as victim (use order()).*
+
+#### iii.
+
+*Parents are used to produce a new kid by crossover. Mutate this kid with probability mutprob (use crossover(), mutate()).*
+
+#### iv.
+
+*The victim is replaced by the kid in the population and the vector Values is updated.*
+
+#### v.
+
+*The current maximal value of the objective function is saved.*
+
+### e.
+
+```{r}
+genetic(10,0.1)
+genetic(100, 0.1)
+genetic(10, 0.5)
+genetic(100, 0.5)
+genetic(10, 0.9)
+genetic(100, 0.9)
+```
+
+\newpage
+
+# Q2: EM algorithm
+
+\newpage
+
+# Appendix
+
+```{r, ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE,results='show'}
+```
+
