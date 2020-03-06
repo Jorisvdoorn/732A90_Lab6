@@ -168,6 +168,8 @@ genetic(10, 0.9)
 genetic(100, 0.9)
 ```
 
+When looking at the graphs, it is not clear if every set of initial parameters converges to a local minimum. In the cases of only 10 iterations we observe a downward sloping line, however, when looking at the simulations with 100 iterations this convergence is not as clear. It might be possible that the algorithm converges to another local minimum if the number of iterations increases.
+
 \newpage
 
 # Q2: EM algorithm
@@ -194,7 +196,57 @@ It looks like Y and Z are related. The variance of both Y and Z decreases as X (
 $$Y_i \sim e^{\frac{X_i}{\lambda}}, Z_i \sim e^{\frac{X_i}{2\lambda}} $$
 *where $\lambda$ is some unknown parameter. The goal is to derive an EM algorithm that estimates $\lambda$.*
 
+## 3.
 
+*Implement this algorithm in R, use $\lambda_0$ = 100 and convergence criterion "stop if the change" in $\lambda$ is less than 0:001". What is the optimal $\lambda$ and how many iterations were required to compute it?*
+
+```{r}
+# work in progress
+
+
+
+Y<-rnorm(100)
+Y[sample(1:length(Y),20,replace=FALSE)]<-NA
+
+floglik<-function(y, mu, sigma2, n){ -0.5*n*log(2*pi*sigma2)-0.5*sum((y-mu)^2)/sigma2}
+
+myEM<-function(Y,eps,kmax){
+  Yobs <- Y[!is.na(Y)]
+  Ymiss <- Y[is.na(Y)]
+  n <- length(c(Yobs, Ymiss))
+  r <- length(Yobs)
+  
+  k<-1
+  muk<-1
+  sigma2k<-0.1
+  
+  llvalprev<-floglik(Yobs,muk,sigma2k,r)
+  llvalcurr<-llvalprev+10+100*eps
+  print(c(muk,sigma2k,llvalcurr))
+  
+  while ((abs(llvalprev-llvalcurr)>eps) && (k<(kmax+1))){
+    llvalprev<-llvalcurr
+    ## E-step
+    EY<-sum(Yobs)+(n-r)*muk
+    EY2<-sum(Yobs^2)+(n-r)*(muk^2+sigma2k)
+    
+    ## M-step
+    muk<-EY/n
+    sigma2k<-EY2/n-muk^2
+    
+    ## Compute log-likelihood
+    llvalcurr<-floglik(Yobs,muk,sigma2k,r)
+    k<-k+1
+    
+    print(c(muk,sigma2k,llvalcurr, k))
+  }
+}
+
+EM.Norm(Y,0.0001,100)
+mean(Y,na.rm=T)
+var(Y,na.rm = T)
+
+```
 
 \newpage
 
